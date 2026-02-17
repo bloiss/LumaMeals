@@ -25,8 +25,8 @@ func main() {
 		fmt.Println("🚀 Visite de :", r.URL)
 	})
 
-	// 4. On lance la bête ! (Exemple sur un paquet de Barilla)
-	err := c.Visit("https://fr.openfoodfacts.org/produit/8076809513725/spaghetti-n-5-barilla")
+	// On teste sur du Nutella, ça ne disparait jamais !
+	err := c.Visit("https://fr.openfoodfacts.org/produit/3017620422003/nutella-ferrero-pate-a-tartiner-aux-noisettes-et-au-cacao")
 	if err != nil {
 		fmt.Println("❌ Erreur :", err)
 	}
