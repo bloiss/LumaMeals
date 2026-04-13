@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
-/* Dark mode natif — toujours actif */
+/* Dark mode class-based : ajouter class="dark" sur <html> pour activer dark: utilities */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     color-scheme: dark;
