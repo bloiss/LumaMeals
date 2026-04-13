@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS stores;
+DROP TABLE IF EXISTS supermarkets;
