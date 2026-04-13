@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS recipe_vibes;
+DROP TABLE IF EXISTS recipes;
