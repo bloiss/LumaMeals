@@ -31,7 +31,9 @@ type IngredientRepository interface {
 // Les prix sont TOUJOURS en centimes (int).
 type ProductRepository interface {
 	FindByID(ctx context.Context, id uuid.UUID) (*domain.Product, error)
-	FindCheapestForIngredient(ctx context.Context, ingredientID uuid.UUID) (*domain.MappedProduct, error)
+	// FindCheapestForIngredient interroge la vue cheapest_products_per_ingredient
+	// filtrée par (ingredient_id, supermarket_id). Retourne nil si aucun mapping vérifié.
+	FindCheapestForIngredient(ctx context.Context, ingredientID uuid.UUID, supermarketID uuid.UUID) (*domain.MappedProduct, error)
 }
 
 // MappingRepository gère le pont entre ingrédients génériques et produits concrets.
