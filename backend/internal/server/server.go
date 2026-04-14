@@ -51,8 +51,8 @@ func (s *Server) setupRoutes(recipes *handlers.RecipeHandler, vibes *handlers.Vi
 		// Vibes
 		r.Get("/vibes", vibes.List)
 
-		// Moteur de génération — trouve les produits les moins chers pour une recette
-		// POST body: { "recipe_id": "...", "budget_cents": 500, "servings": 2 }
-		r.Post("/generate", generate.Generate)
+		// Moteur de génération Budget First
+		// POST body: { "recipe_id": "...", "budget_cents": 500, "supermarket_id": "...", "servings": 2 }
+		r.Post("/meals/generate", generate.Generate)
 	})
 }
