@@ -8,10 +8,11 @@ import (
 
 // Supermarket est une chaîne de supermarchés (ex: Lidl, Aldi, Leclerc).
 type Supermarket struct {
-	ID      uuid.UUID `json:"id"       db:"id"`
-	Name    string    `json:"name"     db:"name"`
-	Slug    string    `json:"slug"     db:"slug"`
-	LogoURL string    `json:"logo_url" db:"logo_url"`
+	ID                     uuid.UUID `json:"id"                       db:"id"`
+	Name                   string    `json:"name"                     db:"name"`
+	Slug                   string    `json:"slug"                     db:"slug"`
+	LogoURL                string    `json:"logo_url"                 db:"logo_url"`
+	RequiresStoreSelection bool      `json:"requires_store_selection" db:"requires_store_selection"`
 }
 
 // Store est un magasin physique appartenant à un Supermarket.

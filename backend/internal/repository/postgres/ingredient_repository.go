@@ -54,11 +54,15 @@ func (r *IngredientRepository) FindByRecipeID(ctx context.Context, recipeID uuid
 	for rows.Next() {
 		var ri domain.RecipeIngredient
 		var ing domain.Ingredient
+		var notes *string // notes est nullable dans recipe_ingredients
 		if err := rows.Scan(
-			&ri.RecipeID, &ri.IngredientID, &ri.Quantity, &ri.Unit, &ri.IsOptional, &ri.Notes,
+			&ri.RecipeID, &ri.IngredientID, &ri.Quantity, &ri.Unit, &ri.IsOptional, &notes,
 			&ing.ID, &ing.Name, &ing.Slug, &ing.CategoryID, &ing.DefaultUnit, &ing.CreatedAt,
 		); err != nil {
 			return nil, fmt.Errorf("ingredient.FindByRecipeID scan: %w", err)
+		}
+		if notes != nil {
+			ri.Notes = *notes
 		}
 		ri.Ingredient = &ing
 		results = append(results, ri)

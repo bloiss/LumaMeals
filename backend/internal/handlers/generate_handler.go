@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+	"math"
 	"net/http"
 
 	"github.com/bloiss/lumeameals/internal/core/domain"
 	"github.com/bloiss/lumeameals/internal/core/ports"
+	"github.com/google/uuid"
 )
 
 type GenerateHandler struct {
@@ -26,16 +28,36 @@ func NewGenerateHandler(
 	}
 }
 
-// POST /api/v1/generate
-// Body: { "recipe_id": "...", "budget_cents": 500, "servings": 2 }
-// Tous les montants sont en centimes (int). Ex: budget_cents=500 → 5,00 €
+// POST /api/v1/meals/generate
+//
+// Body JSON :
+//
+//	{
+//	  "recipe_id":      "uuid",
+//	  "budget_cents":   500,
+//	  "supermarket_id": "uuid",
+//	  "servings":       2        (optionnel — défaut = servings de la recette)
+//	}
+//
+// Algorithme Budget First :
+//
+//	Pour chaque ingrédient non-optionnel :
+//	  1. Lire le produit le moins cher dans cheapest_products_per_ingredient
+//	     pour (ingredient_id, supermarket_id)
+//	  2. Ajuster la quantité selon le ratio de portions
+//	  3. packs_needed = CEIL(quantity_needed / conversion_factor)
+//	  4. cost_cents   = packs_needed × price_cents   ← jamais de float
+//	  5. Cumuler dans total_cost_cents
+//
+// Tous les montants sont en centimes (int). Jamais de float pour les prix.
 func (h *GenerateHandler) Generate(w http.ResponseWriter, r *http.Request) {
 	var req domain.GenerateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondError(w, http.StatusBadRequest, "corps de requête invalide")
 		return
 	}
-	if req.RecipeID.String() == "00000000-0000-0000-0000-000000000000" {
+
+	if req.RecipeID == uuid.Nil {
 		respondError(w, http.StatusBadRequest, "recipe_id est requis")
 		return
 	}
@@ -43,56 +65,82 @@ func (h *GenerateHandler) Generate(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, "budget_cents doit être > 0 (en centimes, ex: 500 = 5,00 €)")
 		return
 	}
+	if req.SupermarketID == uuid.Nil {
+		respondError(w, http.StatusBadRequest, "supermarket_id est requis")
+		return
+	}
 
-	// 1. Récupérer la recette
-	recipe, err := h.recipes.FindByID(r.Context(), req.RecipeID)
+	ctx := r.Context()
+
+	// ── 1. Charger la recette ─────────────────────────────────────────────────
+	recipe, err := h.recipes.FindByID(ctx, req.RecipeID)
 	if err != nil {
 		respondError(w, http.StatusNotFound, "recette introuvable")
 		return
 	}
 
-	// 2. Résoudre les ingrédients
-	recipeIngredients, err := h.ingredients.FindByRecipeID(r.Context(), req.RecipeID)
+	// ── 2. Charger les ingrédients de la recette ──────────────────────────────
+	recipeIngredients, err := h.ingredients.FindByRecipeID(ctx, req.RecipeID)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, "impossible de charger les ingrédients")
 		return
 	}
 
-	// 3. Trouver le produit le moins cher pour chaque ingrédient
-	servings := req.Servings
-	if servings == 0 {
-		servings = recipe.Servings
+	// ── 3. Ratio de portions ──────────────────────────────────────────────────
+	// Si servings non fourni, on utilise le nombre de portions de la recette.
+	targetServings := req.Servings
+	if targetServings <= 0 {
+		targetServings = recipe.Servings
 	}
-	ratio := float64(servings) / float64(recipe.Servings)
+	ratio := float64(targetServings) / float64(recipe.Servings)
 
+	// ── 4. Résolution Budget First ────────────────────────────────────────────
 	var mapped []domain.MappedProduct
-	totalCents := 0
+	totalCostCents := 0
 
 	for _, ri := range recipeIngredients {
 		if ri.IsOptional {
 			continue
 		}
-		mp, err := h.products.FindCheapestForIngredient(r.Context(), ri.IngredientID)
+
+		mp, err := h.products.FindCheapestForIngredient(ctx, ri.IngredientID, req.SupermarketID)
 		if err != nil {
-			// Ingrédient sans mapping connu — on continue sans bloquer
+			// Ingrédient sans mapping vérifié pour ce supermarché — on continue.
+			// La recette reste retournée, mais incomplète (prix sous-estimé).
 			continue
 		}
-		// Ajuster le prix normalisé selon le ratio de portions
-		adjustedCents := int(float64(mp.NormalizedCents) * ri.Quantity * ratio)
-		mp.NormalizedCents = adjustedCents
-		totalCents += adjustedCents
+
+		// Quantité ajustée selon le ratio de portions
+		quantityNeeded := ri.Quantity * ratio
+
+		// CEIL(quantity_needed / conversion_factor) = nombre de packs à acheter
+		// Ex : 2.0 (×100g de pâtes) / 5.0 (conversion d'un paquet 500g) = 0.4 → CEIL = 1 pack
+		packsNeeded := int(math.Ceil(quantityNeeded / mp.Mapping.ConversionFactor))
+		if packsNeeded < 1 {
+			packsNeeded = 1
+		}
+
+		// Coût réel = packs × prix du pack (en centimes, jamais de float)
+		costCents := packsNeeded * mp.PriceCents
+
+		mp.QuantityNeeded = quantityNeeded
+		mp.PacksNeeded = packsNeeded
+		mp.CostCents = costCents
+
+		totalCostCents += costCents
 		mapped = append(mapped, *mp)
 	}
 
-	savingsCents := req.BudgetCents - totalCents
+	// ── 5. Construire la réponse ──────────────────────────────────────────────
+	savingsCents := req.BudgetCents - totalCostCents
 
 	result := domain.GenerateResult{
 		Recipe:         *recipe,
 		MappedProducts: mapped,
-		TotalCostCents: totalCents,
+		TotalCostCents: totalCostCents,
 		BudgetCents:    req.BudgetCents,
 		SavingsCents:   savingsCents,
-		IsWithinBudget: totalCents <= req.BudgetCents,
+		IsWithinBudget: totalCostCents <= req.BudgetCents,
 	}
 
 	respondJSON(w, http.StatusOK, result)
