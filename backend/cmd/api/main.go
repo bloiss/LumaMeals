@@ -30,14 +30,16 @@ func main() {
 	vibeRepo       := postgres.NewVibeRepository(pool)
 	ingredientRepo := postgres.NewIngredientRepository(pool)
 	productRepo    := postgres.NewProductRepository(pool)
+	userRepo       := postgres.NewUserRepository(pool)
 
 	// Handlers
 	recipeHandler   := handlers.NewRecipeHandler(recipeRepo, ingredientRepo)
 	vibeHandler     := handlers.NewVibeHandler(vibeRepo)
 	generateHandler := handlers.NewGenerateHandler(recipeRepo, ingredientRepo, productRepo)
+	authHandler     := handlers.NewAuthHandler(userRepo, cfg.JWTSecret)
 
 	// Serveur
-	srv := server.New(cfg, recipeHandler, vibeHandler, generateHandler)
+	srv := server.New(cfg, recipeHandler, vibeHandler, generateHandler, authHandler)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	log.Printf("LumaMeals API listening on %s (env=%s)\n", addr, cfg.Env)
