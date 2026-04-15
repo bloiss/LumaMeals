@@ -1,4 +1,7 @@
-import { motion, type Variants } from 'framer-motion'
+import { AnimatePresence, motion, type Variants } from 'framer-motion'
+import { useGenerate } from './hooks/useGenerate'
+import { GenerateForm } from './components/GenerateForm'
+import { ResultCard } from './components/ResultCard'
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -9,25 +12,20 @@ const fadeUp: Variants = {
   }),
 }
 
-const features = [
-  { icon: '🛒', title: 'Prix en temps réel', desc: 'Scraping automatique des supermarchés locaux.' },
-  { icon: '🎯', title: 'Budget au centime', desc: 'Aucun arrondi, aucune surprise à la caisse.' },
-  { icon: '🎓', title: 'Tarif étudiant', desc: 'Vérifié par ton adresse mail universitaire.' },
-  { icon: '✨', title: 'Vibes & recettes', desc: 'Des repas qui correspondent à ton humeur.' },
-]
-
 export default function App() {
+  const { result, loading, error, generate, reset } = useGenerate()
+
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col">
 
       {/* ── Hero ── */}
-      <section className="flex flex-col items-center justify-center text-center px-6 pt-24 pb-20 gap-6">
+      <section className="flex flex-col items-center text-center px-6 pt-20 pb-10 gap-5">
         <motion.div
           custom={0}
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="text-6xl"
+          className="text-5xl"
         >
           🍽️
         </motion.div>
@@ -39,7 +37,7 @@ export default function App() {
           animate="visible"
           className="text-5xl font-bold tracking-tight text-white"
         >
-          Luma<span className="text-emerald-400">Meals</span>
+          Luma<span className="text-violet-400">Meals</span>
         </motion.h1>
 
         <motion.p
@@ -47,50 +45,54 @@ export default function App() {
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="text-zinc-400 text-lg max-w-md"
+          className="text-zinc-400 text-base max-w-sm"
         >
-          Cuisine bien. Dépense moins. On trouve les ingrédients les moins chers
-          dans ton supermarché, au centime près.
+          Cuisine bien. Dépense moins.
         </motion.p>
-
-        <motion.div
-          custom={3}
-          variants={fadeUp}
-          initial="hidden"
-          animate="visible"
-          className="flex gap-3 flex-wrap justify-center"
-        >
-          <button className="bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold px-6 py-3 rounded-xl transition-colors">
-            Voir les recettes
-          </button>
-          <button className="border border-zinc-700 hover:border-zinc-500 text-zinc-300 px-6 py-3 rounded-xl transition-colors">
-            En savoir plus
-          </button>
-        </motion.div>
       </section>
 
-      {/* ── Features ── */}
-      <section className="max-w-4xl mx-auto w-full px-6 pb-24 grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {features.map((f, i) => (
-          <motion.div
-            key={f.title}
-            custom={i + 4}
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 flex gap-4 items-start"
-          >
-            <span className="text-3xl">{f.icon}</span>
-            <div>
-              <h3 className="font-semibold text-zinc-100 mb-1">{f.title}</h3>
-              <p className="text-zinc-400 text-sm">{f.desc}</p>
-            </div>
-          </motion.div>
-        ))}
+      {/* ── Form / Result / Error ── */}
+      <section className="flex-1 px-6 pb-16">
+        <AnimatePresence mode="wait">
+
+          {result ? (
+            <motion.div
+              key="result"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              <ResultCard result={result} onReset={reset} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="form"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              <GenerateForm onSubmit={generate} loading={loading} />
+
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="w-full max-w-xl mx-auto mt-4 rounded-xl border border-red-800
+                             bg-red-950/40 px-4 py-3 text-sm text-red-400"
+                >
+                  {error}
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+
+        </AnimatePresence>
       </section>
 
       {/* ── Footer ── */}
-      <footer className="mt-auto border-t border-zinc-800 py-6 text-center text-zinc-600 text-sm">
+      <footer className="border-t border-zinc-800 py-5 text-center text-zinc-600 text-xs">
         LumaMeals — manger bien sans se ruiner
       </footer>
 
