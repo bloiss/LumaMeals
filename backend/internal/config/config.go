@@ -11,6 +11,7 @@ type Config struct {
 	DatabaseURL string
 	Port        string
 	Env         string
+	JWTSecret   string
 }
 
 func Load() (*Config, error) {
@@ -26,6 +27,7 @@ func Load() (*Config, error) {
 		DatabaseURL: dbURL,
 		Port:        getEnv("PORT", "8080"),
 		Env:         getEnv("ENV", "development"),
+		JWTSecret:   getEnv("JWT_SECRET", "dev-secret-change-in-production"),
 	}, nil
 }
 
