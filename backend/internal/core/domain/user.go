@@ -8,12 +8,30 @@ import (
 )
 
 // User est un utilisateur de LumaMeals.
-// is_student_verified indique si son adresse mail appartient à un domaine étudiant reconnu.
 type User struct {
 	ID                uuid.UUID `json:"id"                  db:"id"`
 	Email             string    `json:"email"               db:"email"`
+	PasswordHash      string    `json:"-"                   db:"password_hash"`
 	IsStudentVerified bool      `json:"is_student_verified" db:"is_student_verified"`
 	CreatedAt         time.Time `json:"created_at"          db:"created_at"`
+}
+
+// RegisterRequest est le body de POST /auth/register.
+type RegisterRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+// LoginRequest est le body de POST /auth/login.
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+// AuthResponse est la réponse après register ou login.
+type AuthResponse struct {
+	Token string `json:"token"`
+	User  User   `json:"user"`
 }
 
 // studentDomainSuffixes liste les suffixes de domaines étudiants reconnus.

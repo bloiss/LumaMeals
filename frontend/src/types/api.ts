@@ -94,3 +94,30 @@ export interface GenerateResult {
 export interface ApiError {
   error: string
 }
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+
+export interface User {
+  id: string
+  email: string
+  is_student_verified: boolean
+  created_at: string
+}
+
+// Requête POST /api/v1/auth/register
+export interface RegisterRequest {
+  email: string
+  password: string
+}
+
+// Requête POST /api/v1/auth/login
+export interface LoginRequest {
+  email: string
+  password: string
+}
+
+// Réponse register + login
+export interface AuthResponse {
+  token: string
+  user: User
+}

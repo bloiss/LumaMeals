@@ -9,7 +9,7 @@ interface UseGenerateState {
 }
 
 interface UseGenerateReturn extends UseGenerateState {
-  generate: (req: GenerateRequest) => Promise<void>
+  generate: (req: GenerateRequest, token: string) => Promise<void>
   reset: () => void
 }
 
@@ -20,10 +20,10 @@ export function useGenerate(): UseGenerateReturn {
     error: null,
   })
 
-  async function generate(req: GenerateRequest): Promise<void> {
+  async function generate(req: GenerateRequest, token: string): Promise<void> {
     setState({ result: null, loading: true, error: null })
     try {
-      const result = await postGenerate(req)
+      const result = await postGenerate(req, token)
       setState({ result, loading: false, error: null })
     } catch (err) {
       const message = err instanceof ApiError
