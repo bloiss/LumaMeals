@@ -32,11 +32,15 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   return response.json() as Promise<T>
 }
 
-// POST /api/v1/meals/generate
+// POST /api/v1/meals/generate — requiert un JWT dans Authorization: Bearer
 // budget_cents et les prix retournés sont toujours des entiers en centimes
-export async function postGenerate(req: GenerateRequest): Promise<GenerateResult> {
+export async function postGenerate(req: GenerateRequest, token: string): Promise<GenerateResult> {
   return apiFetch<GenerateResult>('/meals/generate', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
     body: JSON.stringify(req),
   })
 }
