@@ -21,13 +21,14 @@ func New(
 	vibes *handlers.VibeHandler,
 	generate *handlers.GenerateHandler,
 	auth *handlers.AuthHandler,
+	supermarkets *handlers.SupermarketHandler,
 ) *Server {
 	s := &Server{
 		cfg:    cfg,
 		router: chi.NewRouter(),
 	}
 	s.setupMiddleware()
-	s.setupRoutes(recipes, vibes, generate, auth)
+	s.setupRoutes(recipes, vibes, generate, auth, supermarkets)
 	return s
 }
 
@@ -49,6 +50,7 @@ func (s *Server) setupRoutes(
 	vibes *handlers.VibeHandler,
 	generate *handlers.GenerateHandler,
 	auth *handlers.AuthHandler,
+	supermarkets *handlers.SupermarketHandler,
 ) {
 	s.router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -66,6 +68,10 @@ func (s *Server) setupRoutes(
 		r.Get("/recipes/{id}", recipes.Get)
 		r.Get("/vibes/{vibeID}/recipes", recipes.ListByVibe)
 		r.Get("/vibes", vibes.List)
+
+		// Supermarchés — publics
+		r.Get("/supermarkets", supermarkets.List)
+		r.Get("/supermarkets/{postalCode}/stores", supermarkets.ListStores)
 
 		// Moteur Budget First — protégé par JWT
 		r.Group(func(r chi.Router) {
