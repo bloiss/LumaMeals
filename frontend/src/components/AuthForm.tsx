@@ -41,7 +41,7 @@ export function AuthForm({ onSignUp, onSignIn, loading, error }: AuthFormProps) 
               onClick={() => setMode(m)}
               className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all ${
                 mode === m
-                  ? 'bg-violet-500 text-white shadow'
+                  ? 'bg-emerald-500 text-white shadow'
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
@@ -63,9 +63,9 @@ export function AuthForm({ onSignUp, onSignIn, loading, error }: AuthFormProps) 
               placeholder={mode === 'register' ? 'prenom@univ-rennes.fr' : 'ton@email.fr'}
               required
               autoComplete="email"
-              className="bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-3 text-sm
+              className="bg-slate-950 border border-zinc-700 rounded-xl px-4 py-3 text-sm
                          text-zinc-100 placeholder-zinc-600 focus:outline-none
-                         focus:border-violet-500 transition-colors"
+                         focus:border-emerald-500 transition-colors"
             />
           </div>
 
@@ -82,9 +82,9 @@ export function AuthForm({ onSignUp, onSignIn, loading, error }: AuthFormProps) 
               required
               minLength={8}
               autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
-              className="bg-zinc-950 border border-zinc-700 rounded-xl px-4 py-3 text-sm
+              className="bg-slate-950 border border-zinc-700 rounded-xl px-4 py-3 text-sm
                          text-zinc-100 placeholder-zinc-600 focus:outline-none
-                         focus:border-violet-500 transition-colors"
+                         focus:border-emerald-500 transition-colors"
             />
           </div>
 
@@ -115,8 +115,8 @@ export function AuthForm({ onSignUp, onSignIn, loading, error }: AuthFormProps) 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl font-bold text-zinc-950 text-sm
-                       bg-violet-500 hover:bg-violet-400 disabled:opacity-40
+            className="w-full py-3 rounded-xl font-bold text-slate-950 text-sm
+                       bg-emerald-500 hover:bg-violet-400 disabled:opacity-40
                        disabled:cursor-not-allowed transition-all"
           >
             {loading

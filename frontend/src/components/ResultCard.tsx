@@ -111,7 +111,7 @@ export function ResultCard({ result, onReset }: ResultCardProps) {
         <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden mb-4">
           <div
             className={`h-full rounded-full transition-all ${
-              is_within_budget ? 'bg-violet-500' : 'bg-red-500'
+              is_within_budget ? 'bg-emerald-500' : 'bg-red-500'
             }`}
             style={{ width: `${Math.min((total_cost_cents / budget_cents) * 100, 100)}%` }}
           />
