@@ -154,7 +154,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
                   }}
                   className={`inline-block ${
                     word.accent
-                      ? 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400'
+                      ? 'text-transparent bg-clip-text bg-linear-to-r from-emerald-400 to-cyan-400'
                       : ''
                   }`}
                 >
@@ -192,7 +192,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
               whileTap={{ scale: 0.96 }}
               transition={{ type: 'spring', stiffness: 400, damping: 18 }}
               className="flex items-center gap-3 cursor-pointer
-                         bg-gradient-to-r from-emerald-500 to-cyan-500
+                         bg-linear-to-r from-emerald-500 to-cyan-500
                          text-slate-950 font-bold px-8 py-4 rounded-2xl text-base"
             >
               Générer mon repas
@@ -242,7 +242,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
 
           {/* Glow */}
           <div className="absolute inset-16 rounded-full
-                          bg-gradient-to-br from-emerald-500/20 to-cyan-500/15 blur-3xl" />
+                          bg-linear-to-br from-emerald-500/20 to-cyan-500/15 blur-3xl" />
 
           {/* Anneau conic rotatif */}
           <motion.div
