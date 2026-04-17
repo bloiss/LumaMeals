@@ -62,7 +62,7 @@ export function GenerateForm({ onSubmit, loading }: GenerateFormProps) {
           <label className="text-sm font-medium text-zinc-400 uppercase tracking-wider">
             Budget
           </label>
-          <span className="text-3xl font-bold text-violet-400">
+          <span className="text-3xl font-bold text-emerald-400">
             {formatPrice(budgetCents)}
           </span>
         </div>
@@ -74,7 +74,7 @@ export function GenerateForm({ onSubmit, loading }: GenerateFormProps) {
           value={budgetCents}
           onChange={e => setBudgetCents(Number(e.target.value))}
           className="w-full h-2 rounded-full appearance-none cursor-pointer
-                     bg-zinc-800 accent-violet-500"
+                     bg-zinc-800 accent-emerald-500"
         />
         <div className="flex justify-between text-xs text-zinc-600">
           <span>{formatPrice(BUDGET_MIN)}</span>
@@ -95,7 +95,7 @@ export function GenerateForm({ onSubmit, loading }: GenerateFormProps) {
               onClick={() => setSupermarketId(s.id)}
               className={`flex-1 py-3 rounded-xl border text-sm font-semibold transition-all ${
                 supermarketId === s.id
-                  ? 'border-violet-500 bg-violet-500/10 text-violet-300'
+                  ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300'
                   : 'border-zinc-700 text-zinc-400 hover:border-zinc-500'
               }`}
             >
@@ -115,7 +115,7 @@ export function GenerateForm({ onSubmit, loading }: GenerateFormProps) {
           onChange={e => setRecipeId(e.target.value)}
           className="w-full bg-zinc-900 border border-zinc-700 text-zinc-100
                      rounded-xl px-4 py-3 text-sm focus:outline-none
-                     focus:border-violet-500 transition-colors"
+                     focus:border-emerald-500 transition-colors"
         >
           {recipes.map(r => (
             <option key={r.id} value={r.id}>
@@ -130,8 +130,9 @@ export function GenerateForm({ onSubmit, loading }: GenerateFormProps) {
         type="submit"
         disabled={loading || !recipeId || !supermarketId}
         className="w-full py-4 rounded-xl font-bold text-zinc-950 text-base
-                   bg-violet-500 hover:bg-violet-400 disabled:opacity-40
-                   disabled:cursor-not-allowed transition-all"
+                   bg-linear-to-r from-emerald-500 to-cyan-500
+                   hover:from-emerald-400 hover:to-cyan-400
+                   disabled:opacity-40 disabled:cursor-not-allowed transition-all"
       >
         {loading ? 'Calcul en cours…' : 'Générer mon repas'}
       </button>
