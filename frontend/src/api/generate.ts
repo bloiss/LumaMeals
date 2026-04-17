@@ -50,24 +50,7 @@ export async function getRecipes(): Promise<Recipe[]> {
   return apiFetch<Recipe[]>('/recipes')
 }
 
-// GET /api/v1/supermarkets — pas encore implémenté côté backend,
-// on retourne la liste statique en attendant le scraper
+// GET /api/v1/supermarkets
 export async function getSupermarkets(): Promise<Supermarket[]> {
-  // TODO: remplacer par apiFetch<Supermarket[]>('/supermarkets') quand l'endpoint existe
-  return Promise.resolve([
-    {
-      id: '00000000-0000-0000-0005-000000000001',
-      name: 'Lidl',
-      slug: 'lidl',
-      logo_url: '',
-      requires_store_selection: false,
-    },
-    {
-      id: '00000000-0000-0000-0005-000000000002',
-      name: 'Leclerc',
-      slug: 'leclerc',
-      logo_url: '',
-      requires_store_selection: true,
-    },
-  ])
+  return apiFetch<Supermarket[]>('/supermarkets')
 }
