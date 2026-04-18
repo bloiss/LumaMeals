@@ -6,6 +6,9 @@ import { GenerateForm } from './components/GenerateForm'
 import { ResultCard } from './components/ResultCard'
 import { AuthForm } from './components/AuthForm'
 import { HeroSection } from './components/HeroSection'
+import { HowItWorks } from './components/HowItWorks'
+import { RecipesShowcase } from './components/RecipesShowcase'
+import { Footer } from './components/Footer'
 
 export default function App() {
   const formRef = useRef<HTMLDivElement>(null)
@@ -19,9 +22,13 @@ export default function App() {
   return (
     <main className="min-h-screen bg-slate-950 text-zinc-100 flex flex-col">
 
-      {/* ── Hero — visible si non connecté et pas de résultat ── */}
+      {/* ── Landing — visible si non connecté et pas de résultat ── */}
       {!isAuthenticated && !result && (
-        <HeroSection onStart={scrollToForm} />
+        <>
+          <HeroSection onStart={scrollToForm} />
+          <HowItWorks />
+          <RecipesShowcase onStart={scrollToForm} />
+        </>
       )}
 
       {/* ── Header compact — visible si connecté ── */}
@@ -130,9 +137,7 @@ export default function App() {
       </div>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-slate-800 py-5 text-center text-zinc-600 text-xs">
-        LumaMeals — manger bien sans se ruiner
-      </footer>
+      <Footer />
 
     </main>
   )
