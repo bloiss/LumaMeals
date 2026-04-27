@@ -25,9 +25,10 @@ func main() {
 	}
 	defer pool.Close()
 
-	// Scrapers enregistrés — ajouter leclerc.go ici quand prêt
+	// Scrapers enregistrés
 	runner := scraper.NewRunner(pool,
 		scraper.NewLidlScraper(),
+		scraper.NewLeclercScraper(),
 	)
 
 	interval := cfg.ScraperInterval
